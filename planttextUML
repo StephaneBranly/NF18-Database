@@ -1,0 +1,111 @@
+@startuml
+class CLIENT{
+
+}
+
+class PERSONNEL{
+    Poste : {Veto,Assistant}
+    Specialites : JSON
+}
+
+
+class INDIVIDU_HUMAIN
+{
+    Nom : string
+    Prenom : string
+    DateDeNaissance : date
+    adresse : string
+    NumeroTel : string
+}
+
+class PATIENT{
+Nom : string
+DateDeNaissance : date ou NULL
+Taille : {Petite, Moyenne}
+NumeroPuceID : string ou NULL
+NumeroPasseport : string ou NULL
+}
+
+class MEDICAMENT{
+NomMolecule : string
+Description : string
+InterditPour : JSON
+}
+
+class ESPECE{
+Espece : string
+}
+
+class MESURE{
+DateEtHeure : datetime
+Taille : {Petite, Moyenne}
+Poids : float
+}
+
+class TRAITEMENT{
+DateEtHeure : datetime
+DateDebut : date
+Duree : integer
+}
+
+class TRAITEMENT_QUANTITE{
+Quantite : integer
+}
+
+class RESULTAT_ANALYSE{
+DateEtHeure : datetime
+Resultat : string
+}
+
+class OBSERVATION_GENERALE{
+DateEtHeure : datetime
+Observation : string
+}
+
+class PROCEDURE{
+DateEtHeure : datetime
+Description : string
+}
+
+class DUREE{
+DateDebut : date
+DateFin : date ou NULL
+}
+
+together {
+ class MESURE
+ class TRAITEMENT
+ class RESULTAT_ANALYSE
+ class OBSERVATION_GENERALE
+ class PROCEDURE
+}
+
+note "XOR" as N2
+CLIENT .. N2
+N2 .. PERSONNEL
+
+note "Taille NOT NULL OR Poids NOT NULL" as N1
+MESURE .. N1
+
+note "Doit etre prescrit a une espece autorisee" as N3
+MEDICAMENT .. N3
+
+note "Instancié par {félins, canidés, reptiles, rongeurs, oiseaux, autres}" as N4
+ESPECE .. N4
+INDIVIDU_HUMAIN <|-- CLIENT
+INDIVIDU_HUMAIN <|-- PERSONNEL
+PATIENT "*" - "*" CLIENT  : appartient à >
+(PATIENT, CLIENT) .. DUREE
+PATIENT "*" -- "1" ESPECE  : appartient à >
+PATIENT "*" - "*" PERSONNEL  : soigné par >
+(PATIENT, PERSONNEL) .. DUREE
+MESURE "*" --*  "1" PATIENT : compose le dossier medical de  >
+TRAITEMENT "*" --* "1" PATIENT : compose le dossier medical de  >
+MEDICAMENT "*" -- "*" TRAITEMENT  : est pris dans >
+(MEDICAMENT, TRAITEMENT) .. TRAITEMENT_QUANTITE
+RESULTAT_ANALYSE "*" --* "1" PATIENT : compose le dossier medical de  >
+OBSERVATION_GENERALE "*" --* "1" PATIENT : compose le dossier medical de  >
+OBSERVATION_GENERALE "*" -- "1" PERSONNEL :  faite par >
+PROCEDURE "*" --o "1" PATIENT : compose le dossier medical de  >
+
+@enduml
